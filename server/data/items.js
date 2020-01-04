@@ -1,119 +1,84 @@
-const drinkSizeOptions = optionsConfig[0];
+import path from 'path';
+import { options } from './options';
 
-const physicalItems = [
+const drinkSizes = options[0];
+const espressoShotCount = options[1];
+const specialDrinkSizes = options[2];
+
+const imgroot = path.resolve(__dirname, '../public/images/stock');
+
+const hotDrinks = [
   {
     name: 'Americano',
     price: 2.50,
-    options: drinkSizeOptions,
-    img: 'url'
+    options: [drinkSizes],
+    img: `${imgroot}/Americano.jpg`,
+    category: 'Hot Drinks',
   },
   {
-    name: 'Capuccino',
+    name: 'Cappuccino',
     price: 3.39,
-    img: 'url'
+    options: [espressoShotCount],
+    imgurl: `${imgroot}/Cappuccino.jpg`,
+    category: 'Hot Drinks',
   },
-]
+  {
+    name: 'Latte',
+    price: 2.99,
+    options: [drinkSizes, espressoShotCount],
+    imgurl: `${imgroot}/Latte.jpg`,
+    category: 'Hot Drinks',
+  },
+  {
+    name: 'Macchiato',
+    price: 3.49,
+    options: [espressoShotCount],
+    imgurl: `${imgroot}/Macchiato.jpg`,
+    category: 'Hot Drinks',
+  },
+  {
+    name: 'Brewed Tea',
+    price: 1.39,
+    options: [drinkSizes],
+    imgurl: `${imgroot}/Brewed-Tea.jpg`,
+    category: 'Hot Drinks',
+  },
+];
 
-const optionsConfig = [
+const smoothies = [
   {
-    id: 'oc1',
-    title: 'Brewed Size Mods',
-    config: {
-      component: 'ButtonInputArray',
-      multipleOptionsAllowed: false,
-    },
-    variants: [
-      {
-        optName: 'small',
-        adjustPrice: 0,
-      },
-      {
-        optName: 'medium',
-        adjustPrice: 0.5,
-      },
-      {
-        optTitle: 'large',
-        adjustPrice: 1.00,
-      },
-    ],
+    name: 'Mango Smoothie',
+    price: 4.00,
+    options: [specialDrinkSizes],
+    category: 'Smoothies',
+    imgurl: `${imgroot}/Mango-Smoothie.jpg`,
   },
   {
-    id: 'oc2',
-    title: 'Special Coffee Drink Size Mods',
-    config: {
-      component: 'ButtonInputArray',
-      multipleOptionsAllowed: false,
-    },
-    variants: [
-      {
-        optName: 'small',
-        adjustPrice: 0,
-      },
-      {
-        optName: 'medium',
-        adjustPrice: 0.79,
-      },
-      {
-        optTitle: 'large',
-        adjustPrice: 1.23,
-      },
-    ],
+    name: 'Strawberry-Banana Smoothie',
+    price: 3.50,
+    options: [specialDrinkSizes],
+    category: 'Smoothies',
+    imgurl: `${imgroot}/Strawberry-Banana-Smoothie.jpg`,
+  },
+  {
+    name: 'Pineapple-Coconut Smoothie',
+    price: 4.49,
+    options: [specialDrinkSizes],
+    category: 'Smoothies',
+    imgurl: `${imgroot}/Coconut-Smoothie.jpg`,
+  },
+  {
+    name: 'Green Cleanse Smoothie',
+    price: 3.00,
+    options: [specialDrinkSizes],
+    category: 'Smoothies',
+    imgurl: `${imgroot}/Green-Smoothie.jpg`,
   }
 ];
 
+const physicalItems = [
+  ...hotDrinks,
+  ...smoothies
+];
 
-/*
-Categories:
-Coffee
-    Capuccino
-    Mocha
-    Espresso
-    Matcha
-Tea
-    Matcha Lattee
-
-Smoothies/Juices
-    Pineapple/Coconut
-    Mango
-    Strawberry Banana
-    Green Cleanse
-Boba Milk Tea
-
-Pastry
-    Cupcakes
-    Brownies
-    Blondies
-    Cookies
-    Mandolines
-    Banana Bread
-    Coffee Cupcake
-    Churros
-Sandwich
-    Egg
-    Egg & Cheese
-    Bacon Egg & Cheese
-    Tomato Spanish Toast
-    Bruschetta
-
-Merchandise
-
-    Clothing
-        Coffee Lover Shirts
-
-    Coffee Makers
-        French Press
-        MR.Coffee Dripper
-        Espresso Makers
-
-    Etc
-        Thermos
-        Coffee Mugs
-        Music - Deal of the Week
-
-
-
-
-Strudel
-By che - Own work, CC BY-SA 2.5, https://commons.wikimedia.org/w/index.php?curid=428026
-
-*/
+export { physicalItems }
