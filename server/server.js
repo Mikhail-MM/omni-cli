@@ -19,6 +19,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // app.use('/REST-TEST', RESTRouter, messagesRouter);
+app.get('/', (req, res) => {
+  res.send('Hello!')
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
