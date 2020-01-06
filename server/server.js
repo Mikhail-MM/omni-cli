@@ -23,6 +23,10 @@ app.get('/', (req, res) => {
   res.send('Hello!')
 });
 
+app.get('/api', (req, res) => {
+  res.send('NginX proxy should forward around this, PERHAPS?')
+});
+
 app.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
 });
