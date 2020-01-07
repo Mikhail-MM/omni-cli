@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, index: true, unique: true },
     hash: { type: String, required: true },
     dateJoined: { type: Date, required: true, default: Date.now }, // Pass Date.now function just in case
     avatarURL: { type: String, required: true, default: '/assets/images/defaultAvatar.jpg' },

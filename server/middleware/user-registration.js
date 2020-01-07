@@ -8,6 +8,13 @@ const registration = {
   marketplace: ({ credentials }, next) => createNewMarketplaceUser({ credentials }, next),
 };
 
+function sanitizeFields(fields) {
+  return ({
+    ...fields,
+    email: fields.email.toLowerCase(),
+  });
+}
+
 const registerNewUser = async (req, res, next) => {
   try {
 
@@ -24,11 +31,13 @@ const registerNewUser = async (req, res, next) => {
       return next(err);
     };
 
-    const isValidated = await validateCredentials({ credentials: req.body }, next);
+    const sanitized = sanitizeFields(req.body)
+
+    const isValidated = await validateCredentials({ credentials: sanitized }, next);
 
     if (isValidated) {
       const registrationFunction = registration[req.query.pathway]
-      const newUser = await registrationFunction({ credentials: req.body }, next);
+      const newUser = await registrationFunction({ credentials: sanitized }, next);
       console.log(`A new User has been created:`);
       console.log(newUser);
       return res.status(200).json({
