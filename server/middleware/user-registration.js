@@ -3,8 +3,6 @@ import uuid from 'uuid/v1';
 
 import { UserModel } from '../models/schema/user-mongoose';
 
-import { handleError } from '../../lib/utils/logger';
-
 const registration = {
   omni: ({ credentials }, next) => createNewOmniMaster({ credentials }, next),
   marketplace: ({ credentials }, next) => createNewMarketplaceUser({ credentials }, next),
@@ -27,13 +25,15 @@ const registerNewUser = async (req, res, next) => {
     };
 
     const isValidated = await validateCredentials({ credentials: req.body }, next);
-    console.log("IS VALIDATEDVV")
-    console.log(isValidated);
-    console.log("ISVALIDATED ^^")
 
     if (isValidated) {
       const registrationFunction = registration[req.query.pathway]
-      registrationFunction({ credentials: req.body }, next);
+      const newUser = await registrationFunction({ credentials: req.body }, next);
+      console.log(`A new User has been created:`);
+      console.log(newUser);
+      return res.status(200).json({
+        message: `Welcome to Omni, ${newUser.firstName}`
+      });
     }
 
   } catch (err) { next(err) };
@@ -41,21 +41,24 @@ const registerNewUser = async (req, res, next) => {
 
 const validateCredentials = async ({ credentials }, next) => {
   try {
+
     const { firstName, lastName, email, password } = credentials;
+
     if (!firstName || !lastName || !email || !password) {
       const err = new Error('Please send all required fields.');
       err.status = 400;
       return next(err);
     }
-    console.log("Validating credentials and searching for existing user.")
+
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
-      console.log(existingUser);
       const err = new Error('User already exists with this account. Please log in.')
       err.status = 409;
       return next(err);
     }
+
     return true;
+
   } catch (err) {
     next(err);
   };
@@ -73,10 +76,7 @@ const createNewOmniMaster = async ({ credentials }, next) => {
       dateJoined: Date.now(),
       ...generateOmniMasterMetadata()
     });
-    const uploadedUser = await newUser.save();
-    console.log("Uploaded User:")
-    console.log(uploadedUser)
-    res.json(uploadedUser);
+    return await newUser.save();
   } catch (err) {
     next(err);
   };
@@ -85,7 +85,6 @@ const createNewOmniMaster = async ({ credentials }, next) => {
 const createNewMarketplaceUser = async ({ credentials }, next) => {
   try {
     const { firstName, lastName, email, password } = credentials;
-
     const newUser = new UserModel({
       firstName,
       lastName,
@@ -94,10 +93,7 @@ const createNewMarketplaceUser = async ({ credentials }, next) => {
       dateJoined: Date.now(),
       ...generateMarketplaceUserMetadata()
     });
-    const uploadedUser = await newUser.save();
-    console.log("Uploaded User:")
-    console.log(uploadedUser);
-    res.json(uploadedUser);
+    return await newUser.save();
   } catch (err) {
     next(err);
   };
