@@ -1,5 +1,5 @@
 import util from 'util';
-
+import helmet from 'helmet';
 import express from 'express';
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan';
@@ -16,7 +16,8 @@ const app = express();
 app.use(morgan('common'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
+app.use(cookieParser());
+app.use(helmet());
 
 if (app.get('env') === 'development') {
   console.log('Configuring Access Control Allow Origin header for Local Development.');
