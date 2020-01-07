@@ -10,7 +10,7 @@ const registration = {
   marketplace: ({ credentials }, next) => createNewMarketplaceUser({ credentials }, next),
 };
 
-const registerNewUser = (req, res, next) => {
+const registerNewUser = async (req, res, next) => {
   try {
 
     if (!req.query.pathway) {
@@ -26,9 +26,15 @@ const registerNewUser = (req, res, next) => {
       return next(err);
     };
 
-    validateCredentials({ credentials: req.body }, next);
-    const registrationFunction = registration[req.query.pathway]
-    registrationFunction({ credentials: req.body }, next);
+    const isValidated = await validateCredentials({ credentials: req.body }, next);
+    console.log("IS VALIDATEDVV")
+    console.log(isValidated);
+    console.log("ISVALIDATED ^^")
+
+    if (isValidated) {
+      const registrationFunction = registration[req.query.pathway]
+      registrationFunction({ credentials: req.body }, next);
+    }
 
   } catch (err) { next(err) };
 };
@@ -49,7 +55,10 @@ const validateCredentials = async ({ credentials }, next) => {
       err.status = 409;
       return next(err);
     }
-  } catch (err) { next(err) };
+    return true;
+  } catch (err) {
+    next(err);
+  };
 }
 
 const createNewOmniMaster = async ({ credentials }, next) => {
@@ -68,12 +77,15 @@ const createNewOmniMaster = async ({ credentials }, next) => {
     console.log("Uploaded User:")
     console.log(uploadedUser)
     res.json(uploadedUser);
-  } catch (err) { next(err) };
+  } catch (err) {
+    next(err);
+  };
 }
 
 const createNewMarketplaceUser = async ({ credentials }, next) => {
   try {
     const { firstName, lastName, email, password } = credentials;
+
     const newUser = new UserModel({
       firstName,
       lastName,
@@ -87,11 +99,7 @@ const createNewMarketplaceUser = async ({ credentials }, next) => {
     console.log(uploadedUser);
     res.json(uploadedUser);
   } catch (err) {
-    console.log("Logging the error once.")
-    console.log(err)
-    console.log("Sending it to next(err)")
-    handleError(err);
-    next(err)
+    next(err);
   };
 };
 

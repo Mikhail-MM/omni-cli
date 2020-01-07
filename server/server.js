@@ -2,7 +2,7 @@ import util from 'util';
 
 import express from 'express';
 
-// import morgan from 'morgan';
+import morgan from 'morgan';
 import { handleError } from '../lib/utils/logger';
 import getEnv from '../lib/utils/get-env';
 
@@ -19,10 +19,30 @@ getEnv()
 
 const app = express();
 
-// app.use(morgan('common'));
+app.use(morgan('common'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+if (app.get('env') === 'development') {
+  console.log('Configuring Access Control Allow Origin header for Local Development.');
+  app.use('/*', (req, res, next) => {
+    res.header(
+      'Access-Control-Allow-Origin',
+      'http://localhost:3000',
+    );
+    res.header(
+      'Access-Control-Allow-Headers',
+      '*'
+    )
+    res.header(
+      'Access-Control-Allow-Methods',
+      '*'
+    )
+    next();
+  });
+}
+
+console.log(process.env.NODE_ENV);
 establishMongooseConnection()
   .then(connection => {
     if (connection.success) {
@@ -48,7 +68,7 @@ registerMongooseUserPathways(app);
 
 app.use('/', (err, req, res, next) => {
   handleError(err);
-  res.status(err.status || 500).send(err.message);
+  res.status(err.status || 500).json({ error: err.stack, message: err.message });
 })
 
 app.listen(process.env.PORT, () => {
