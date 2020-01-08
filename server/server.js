@@ -20,6 +20,7 @@ app.use(cookieParser());
 app.use(helmet());
 
 if (app.get('env') === 'development') {
+  // TODO USE ONLY FOR REQUEST TYPE {{ OPTIONS }}
   console.log('Configuring Access Control Allow Origin header for Local Development.');
   app.use('*', (req, res, next) => {
     res.header(
@@ -83,9 +84,6 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api', usersRouter);
-
-// Register new users and store in MongoDB
-registerMongooseUserPathways(app);
 
 // Universal Error Handler
 app.use('*', (err, req, res, next) => {
