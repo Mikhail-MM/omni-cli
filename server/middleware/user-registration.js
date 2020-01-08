@@ -39,7 +39,9 @@ const registerNewUser = async (req, res, next) => {
     const isValidated = await validateCredentials({ credentials: sanitized }, next);
 
     if (isValidated) {
+      console.log("Validated")
       const registrationFunction = registration[req.query.pathway]
+      console.log("Starting new user creation")
       const newUser = await registrationFunction({ credentials: sanitized }, next);
       console.log(`A new User has been created:`);
       console.log(newUser);
@@ -58,6 +60,7 @@ const registerNewUser = async (req, res, next) => {
 const validateCredentials = async ({ credentials }, next) => {
   try {
     const { email } = credentials;
+    console.log(email);
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       const err = new Error('User already exists with this account. Please log in.')
@@ -72,8 +75,9 @@ const validateCredentials = async ({ credentials }, next) => {
   };
 }
 
-const createNewOmniMaster = async ({ firstName, lastName, email, password }, next) => {
+const createNewOmniMaster = async ({ credentials }, next) => {
   try {
+    const { firstName, lastName, email, password } = credentials;
     const hash = await bcrypt.hash(password, 10);
     const newUser = new UserModel({
       firstName,
@@ -83,13 +87,14 @@ const createNewOmniMaster = async ({ firstName, lastName, email, password }, nex
       dateJoined: Date.now(),
       ...generateOmniMasterMetadata()
     });
-    return await newUser.save();
+    const success = await newUser.save();
+    return success
   } catch (err) {
     next(err);
   };
 }
 
-const createNewMarketplaceUser = async ({ firstName, lastName, email, password }, next) => {
+const createNewMarketplaceUser = async ({ credentials }, next) => {
   try {
 
     const { firstName, lastName, email, password } = credentials;
@@ -102,7 +107,8 @@ const createNewMarketplaceUser = async ({ firstName, lastName, email, password }
       dateJoined: Date.now(),
       ...generateMarketplaceUserMetadata()
     });
-    return await newUser.save();
+    const success = await newUser.save();
+    return success
   } catch (err) {
     next(err);
   };
