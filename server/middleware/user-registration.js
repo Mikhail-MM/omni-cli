@@ -33,39 +33,28 @@ const registerNewUser = async (req, res, next) => {
     };
 
     console.log(req.body)
+    console.log("Maintain this branch")
+    const sanitized = sanitizeFields(req.body)
 
-    const { firstName, lastName, email, password } = sanitizeFields(req.body);
+    const isValidated = await validateCredentials({ credentials: sanitized }, next);
 
-    if (!firstName || !lastName || !email || !password) {
-      const err = new Error('Please send all required fields.');
-      err.status = 400;
-      return next(err);
+    if (isValidated) {
+      const registrationFunction = registration[req.query.pathway]
+      const newUser = await registrationFunction({ credentials: sanitized }, next);
+      console.log(`A new User has been created:`);
+      console.log(newUser);
+      res.header(
+        'Set-Cookie',
+        `Stuff=random--!; Max-Age=${6 * 60 * 60 * 1000};`
+      );
+      return res.status(200).json({
+        message: `Welcome to Omni, ${newUser.firstName}`
+      });
     }
-
-    const existingUser = await UserModel.findOne({ email });
-
-    if (existingUser) {
-      const err = new Error('User already exists with this account. Please log in.')
-      err.status = 409;
-      return next(err);
-    }
-
-    const registrationFunction = registration[req.query.pathway]
-    const newUser = await registrationFunction({ firstName, lastName, email, password }, next);
-    console.log(`A new User has been created:`);
-    console.log(newUser);
-    res.header(
-      'Set-Cookie',
-      `Stuff=random--!; Max-Age=${6 * 60 * 60 * 1000};`
-    );
-    return res.status(200).json({
-      message: `Welcome to Omni, ${newUser.firstName}`
-    });
 
   } catch (err) { next(err) };
 };
 
-/* 
 const validateCredentials = async ({ credentials }, next) => {
   try {
     const { email } = credentials;
@@ -82,7 +71,6 @@ const validateCredentials = async ({ credentials }, next) => {
     next(err);
   };
 }
-*/
 
 const createNewOmniMaster = async ({ firstName, lastName, email, password }, next) => {
   try {
