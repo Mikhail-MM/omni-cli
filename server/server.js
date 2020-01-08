@@ -21,7 +21,6 @@ app.use(cookieParser());
 app.use(helmet());
 
 if (app.get('env') === 'development') {
-  // TODO USE ONLY FOR REQUEST TYPE {{ OPTIONS }}
   console.log('Configuring Access Control Allow Origin header for Local Development.');
   app.use('*', (req, res, next) => {
     res.header(
@@ -57,20 +56,6 @@ establishMongooseConnection()
     console.log(err);
   })
 
-app.use('*', (req, res, next) => {
-  // Cookie Middleware  
-  // Send back secure HTTPONLY cookie on successful auth
-  // Can we send secure on local dev?
-  const maxAge = 3 * 60 * 60 * 1000 // 3 hrs
-  console.log("Cookies: ");
-  console.log(req.cookies);
-  res.cookie('Authorization-Omni', 'sec0ret encu0ingdgin', {
-    maxAge,
-    httpOnly: true,
-    secure: true,
-  });
-  next();
-})
 
 app.get('/', (req, res) => {
   res.send('GET /')
