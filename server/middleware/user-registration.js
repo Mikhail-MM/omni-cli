@@ -40,6 +40,10 @@ const registerNewUser = async (req, res, next) => {
       const newUser = await registrationFunction({ credentials: sanitized }, next);
       console.log(`A new User has been created:`);
       console.log(newUser);
+      res.header(
+        'Set-Cookie',
+        `Stuff=random--!; Max-Age=${6 * 60 * 60 * 1000};`
+      );
       return res.status(200).json({
         message: `Welcome to Omni, ${newUser.firstName}`
       });

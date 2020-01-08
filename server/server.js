@@ -63,10 +63,6 @@ app.use('*', (req, res, next) => {
   const maxAge = 3 * 60 * 60 * 1000 // 3 hrs
   console.log("Cookies: ");
   console.log(req.cookies);
-  res.header(
-    'Set-Cookie',
-    `Stuff=HI!; Max-Age=${maxAge};`
-  );
   res.cookie('Authorization-Omni', 'sec0ret encu0ingdgin', {
     maxAge,
     httpOnly: true,
