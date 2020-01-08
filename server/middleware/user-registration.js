@@ -12,7 +12,7 @@ function sanitizeFields(fields) {
   console.log(fields)
   return ({
     ...fields,
-    email: fields.email.toLowerCase(),
+    email: fields.email.toLowerCase(), // fails on undefined but shouldnt get that far
   });
 }
 
@@ -31,6 +31,7 @@ const registerNewUser = async (req, res, next) => {
       err.status = 400
       return next(err);
     };
+
     console.log(req.body)
     console.log("Maintain this branch")
     const sanitized = sanitizeFields(req.body)
@@ -56,15 +57,7 @@ const registerNewUser = async (req, res, next) => {
 
 const validateCredentials = async ({ credentials }, next) => {
   try {
-
-    const { firstName, lastName, email, password } = credentials;
-
-    if (!firstName || !lastName || !email || !password) {
-      const err = new Error('Please send all required fields.');
-      err.status = 400;
-      return next(err);
-    }
-
+    const { email } = credentials;
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       const err = new Error('User already exists with this account. Please log in.')
@@ -79,9 +72,8 @@ const validateCredentials = async ({ credentials }, next) => {
   };
 }
 
-const createNewOmniMaster = async ({ credentials }, next) => {
+const createNewOmniMaster = async ({ firstName, lastName, email, password }, next) => {
   try {
-    const { firstName, lastName, email, password } = credentials;
     const hash = await bcrypt.hash(password, 10);
     const newUser = new UserModel({
       firstName,
@@ -97,9 +89,11 @@ const createNewOmniMaster = async ({ credentials }, next) => {
   };
 }
 
-const createNewMarketplaceUser = async ({ credentials }, next) => {
+const createNewMarketplaceUser = async ({ firstName, lastName, email, password }, next) => {
   try {
+
     const { firstName, lastName, email, password } = credentials;
+    const hash = await bcrypt.hash(password, 10);
     const newUser = new UserModel({
       firstName,
       lastName,
