@@ -9,6 +9,7 @@ const registration = {
 };
 
 function sanitizeFields(fields) {
+  console.log(fields)
   return ({
     ...fields,
     email: fields.email.toLowerCase(),
@@ -30,7 +31,7 @@ const registerNewUser = async (req, res, next) => {
       err.status = 400
       return next(err);
     };
-
+    console.log(req.body)
     const sanitized = sanitizeFields(req.body)
 
     const isValidated = await validateCredentials({ credentials: sanitized }, next);
