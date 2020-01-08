@@ -32,6 +32,7 @@ const registerNewUser = async (req, res, next) => {
       return next(err);
     };
     console.log(req.body)
+    console.log("Maintain this branch")
     const sanitized = sanitizeFields(req.body)
 
     const isValidated = await validateCredentials({ credentials: sanitized }, next);
