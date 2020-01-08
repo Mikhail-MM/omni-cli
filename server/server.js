@@ -7,7 +7,7 @@ import { handleError } from '../lib/utils/logger';
 import getEnv from '../lib/utils/get-env';
 
 import { establishMongooseConnection } from '../lib/mongo/mongoose-db';
-import { registerMongooseUserPathways } from './router/users';
+import { usersRouter } from './router/users';
 
 getEnv()
 
@@ -21,7 +21,7 @@ app.use(helmet());
 
 if (app.get('env') === 'development') {
   console.log('Configuring Access Control Allow Origin header for Local Development.');
-  app.use('/*', (req, res, next) => {
+  app.use('*', (req, res, next) => {
     res.header(
       'Access-Control-Allow-Origin',
       `${req.get('origin')}`,
@@ -45,8 +45,6 @@ if (app.get('env') === 'production') {
   app.set('trust proxy', 'loopback', process.env.DIGITAL_OCEAN_DROPLET_IP)
 }
 
-
-
 establishMongooseConnection()
   .then(connection => {
     if (connection.success) {
@@ -57,7 +55,7 @@ establishMongooseConnection()
     console.log(err);
   })
 
-app.use('/', (req, res, next) => {
+app.use('*', (req, res, next) => {
   // Cookie Middleware  
   // Send back secure HTTPONLY cookie on successful auth
   // Can we send secure on local dev?
@@ -73,23 +71,24 @@ app.use('/', (req, res, next) => {
     httpOnly: true,
     secure: true,
   });
-
   next();
 })
 
 app.get('/', (req, res) => {
-  res.send('Hello!')
+  res.send('GET /')
 });
 
 app.get('/api', (req, res) => {
-  res.send('NginX proxy should forward around this, PERHAPS?')
+  res.send('GET /api')
 });
+
+app.use('/api', usersRouter);
 
 // Register new users and store in MongoDB
 registerMongooseUserPathways(app);
 
 // Universal Error Handler
-app.use('/', (err, req, res, next) => {
+app.use('*', (err, req, res, next) => {
   handleError(err);
   res.status(err.status || 500).json({ error: err.stack, message: err.message });
 })
