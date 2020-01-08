@@ -51,7 +51,7 @@ const registerNewUser = async (req, res, next) => {
     }
 
     const registrationFunction = registration[req.query.pathway]
-    const newUser = await registrationFunction({ credentials: sanitized }, next);
+    const newUser = await registrationFunction({ firstName, lastName, email, password }, next);
     console.log(`A new User has been created:`);
     console.log(newUser);
     res.header(
@@ -84,9 +84,8 @@ const validateCredentials = async ({ credentials }, next) => {
 }
 */
 
-const createNewOmniMaster = async ({ credentials }, next) => {
+const createNewOmniMaster = async ({ firstName, lastName, email, password }, next) => {
   try {
-    const { firstName, lastName, email, password } = credentials;
     const hash = await bcrypt.hash(password, 10);
     const newUser = new UserModel({
       firstName,
@@ -102,11 +101,11 @@ const createNewOmniMaster = async ({ credentials }, next) => {
   };
 }
 
-const createNewMarketplaceUser = async ({ credentials }, next) => {
+const createNewMarketplaceUser = async ({ firstName, lastName, email, password }, next) => {
   try {
 
     const { firstName, lastName, email, password } = credentials;
-
+    const hash = await bcrypt.hash(password, 10);
     const newUser = new UserModel({
       firstName,
       lastName,
