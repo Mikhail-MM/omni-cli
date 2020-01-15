@@ -28,16 +28,17 @@ app.use('/', (req, res, next) => {
   console.log("Hitting the rest of the middleware")
   console.log("Log sessionID")
   console.log(req.sessionID)
+  console.log(req.session.organizationID )
   next();
 })
 
 if (app.get('env') === 'development') {
   console.log('Configuring Access Control Allow Origin header for Local Development.');
   app.use('*', (req, res, next) => {
-    /* res.header(
+    res.header(
       'Access-Control-Allow-Origin',
       `${req.get('origin')}`,
-    ); */
+    );
     res.header(
       'Access-Control-Allow-Headers',
       'Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie',
