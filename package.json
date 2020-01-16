@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node ./index.js",
     "cli": "nodemon --exec babel-node ./index.js",
-    "server": "nodemon --exec babel-node server/server.js",
+    "server": "nodemon --exec babel-node server/server.js --inspect",
     "test": "mocha --timeout 60000 --require @babel/register __tests/**/**.test.js"
   },
   "keywords": [],
@@ -46,6 +46,7 @@
     "pg-promise": "^10.3.2",
     "redis": "^2.8.0",
     "request": "^2.88.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "ws": "^7.2.1"
   }
 }

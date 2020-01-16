@@ -1,4 +1,5 @@
 import util from 'util';
+import http from 'http';
 import uuid from 'uuid/v4';
 import session from 'express-session';
 import helmet from 'helmet';
@@ -10,11 +11,18 @@ import { handleError } from '../lib/utils/logger';
 import getEnv from '../lib/utils/get-env';
 
 import { establishMongooseConnection } from '../lib/mongo/mongoose-db';
+import { initializeWebsocketConnection} from './socket';
 import { usersRouter } from './router/users';
-import { initSession } from './middleware/session'
+import { sessionParser } from './middleware/session'
+
 getEnv()
 
 const app = express();
+console.log("Setting up WebSocket Initialization...");
+const server = http.createServer(app);
+initializeWebsocketConnection(server);
+console.log("Done.");
+
 
 app.use(morgan('common'));
 app.use(bodyParser.json());
@@ -22,13 +30,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 
-app.use(initSession);
+app.use(sessionParser);
 
 app.use('/', (req, res, next) => {
   console.log("Hitting the rest of the middleware")
   console.log("Log sessionID")
   console.log(req.sessionID)
-  console.log(req.session.organizationID )
+  console.log(req.session.organizationID)
   next();
 })
 
@@ -85,6 +93,6 @@ app.use('*', (err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.stack, message: err.message });
 })
 
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
 });

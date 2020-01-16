@@ -9,11 +9,13 @@ const RedisStore = connectRedis(session);
 redisClient.on('error', console.error);
 redisClient.on('connect', () => console.log("Redis Connection Initialized"));
 
-const initSession = session({
-    store: new RedisStore({ client: redisClient }),
+const store = new RedisStore({ client: redisClient });
+
+const sessionParser = session({
+    store,
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
 });
 
-export { initSession }
+export { sessionParser }
